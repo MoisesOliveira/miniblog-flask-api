@@ -6,9 +6,16 @@ verify_ssl = true
 [dev-packages]
 flask = "*"
 sqlalchemy = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
+pylint = "*"
+flake8 = "*"
 
 [packages]
 marshmallow = "*"
+flask-sqlalchemy = "*"
+pymysql = "*"
+pylint-flask = "*"
 
 [requires]
 python_version = "3.8"
