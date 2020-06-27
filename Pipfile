@@ -16,6 +16,8 @@ marshmallow = "*"
 flask-sqlalchemy = "*"
 pymysql = "*"
 pylint-flask = "*"
+jwt = "*"
+pyjwt = "*"
 
 [requires]
 python_version = "3.8"
