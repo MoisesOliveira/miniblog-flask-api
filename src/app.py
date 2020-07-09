@@ -44,12 +44,13 @@ def login():
             return make_response('Could not verify',401,{'WWW-Authenticate':'Basic realm="Login required"'})
 
         user = User.query.filter_by(name=auth.username).first()
-        session['id'] = user.id
+        session['user_id'] = user.id
         session['public_id'] = user.public_id
         
         if check_password_hash(user.password, auth.password):
             token = jwt.encode({'public_id': user.public_id, 'exp': datetime.datetime.utcnow()+datetime.timedelta(minutes=30)},app.config['SECRET_KEY'])
-            return jsonify({'token': token.decode('UTF-8')})
+            return jsonify({'token': token.decode('UTF-8'), 'user_id': session['user_id']})
+    
         return make_response('Could not verify',401,{'WWW-Authenticate':'Basic realm="Login required"'})
     except:
         return jsonify({'message': 'something went wrong. Try again'}),401
@@ -86,12 +87,13 @@ def get_user(public_id):
 @app.route('/user',methods=['GET'])
 @token_required
 def get_one_user(public_id):
-    user = User.query.filter_by(public_id=session['public_id']).first()
+    user = User.query.filter_by(public_id=public_id).first()
     
     if not user:
         return jsonify({'message':'Not found'})
 
     user_data = {}
+    user_data['id'] = user.id
     user_data['public_id'] = user.public_id
     user_data['name'] = user.name
     user_data['password'] = user.password
@@ -101,7 +103,7 @@ def get_one_user(public_id):
 @token_required
 def post(public_id):
     data = request.get_json()
-    new_post = Post(id=data['id'],content=data['content'],user_id=session['id']) 
+    new_post = Post(id=data['id'],content=data['content'],user_id=data['user_id']) 
     db.session.add(new_post)
     db.session.commit()
     return jsonify({'post': data})
